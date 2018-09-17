@@ -1,0 +1,6 @@
+[package]
+name = "cang-jie"
+version = "0.1.0"
+authors = ["DCjanus <DCjanus@dcjanus.com>"]
+
+[dependencies]
