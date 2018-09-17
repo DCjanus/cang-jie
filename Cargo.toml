@@ -4,3 +4,6 @@ version = "0.1.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
 
 [dependencies]
+tantivy = "0.7"
+jieba-rs = "0.2"
+lazy_static = "1.1"
