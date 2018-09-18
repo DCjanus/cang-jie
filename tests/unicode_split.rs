@@ -4,7 +4,7 @@ extern crate flexi_logger;
 extern crate jieba_rs;
 extern crate tantivy;
 
-use cang_jie::{CangJieTokenizer, TokenizerOption};
+use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
 use chrono::Local;
 use flexi_logger::{Logger, Record};
 use jieba_rs::Jieba;
@@ -23,7 +23,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     let mut schema_builder = SchemaBuilder::default();
 
     let text_indexing = TextFieldIndexing::default()
-        .set_tokenizer("cang_jie") // Set custom tokenizer
+        .set_tokenizer(CANG_JIE) // Set custom tokenizer
         .set_index_option(IndexRecordOption::WithFreqsAndPositions);
     let text_options = TextOptions::default()
         .set_indexing_options(text_indexing)
@@ -33,7 +33,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     let schema = schema_builder.build();
 
     let index = Index::create(RAMDirectory::create(), schema.clone())?;
-    index.tokenizers().register("cang_jie", tokenizer()); // Build cang-jie Tokenizer
+    index.tokenizers().register(CANG_JIE, tokenizer()); // Build cang-jie Tokenizer
 
     let mut index_writer = index.writer(50 * 1024 * 1024)?;
 

@@ -13,7 +13,7 @@ As of now, only support UTF-8.
 ```rust
     let mut schema_builder = SchemaBuilder::default();
     let text_indexing = TextFieldIndexing::default()
-        .set_tokenizer("cang_jie") // Set custom tokenizer
+        .set_tokenizer(CANG_JIE) // Set custom tokenizer
         .set_index_option(IndexRecordOption::WithFreqsAndPositions);
     let text_options = TextOptions::default()
         .set_indexing_options(text_indexing)
@@ -24,7 +24,7 @@ As of now, only support UTF-8.
                         worker: Arc::new(Jieba::empty()), // empty dictionary
                         option: TokenizerOption::Unicode,
                      };
-     index.tokenizers().register("cang_jie", tokenizer); 
+     index.tokenizers().register(CANG_JIE, tokenizer); 
     // ... Some code
 ```
 

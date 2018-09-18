@@ -10,3 +10,5 @@ pub use tokenizer::CangJieTokenizer;
 pub mod options;
 pub mod stream;
 pub mod tokenizer;
+
+pub const CANG_JIE: &str = "CANG_JIE";
