@@ -5,7 +5,9 @@ use stream::CangjieTokenStream;
 
 #[derive(Clone, Debug)]
 pub struct CangJieTokenizer {
+    /// Separation algorithm provider
     pub worker: Arc<Jieba>,
+    /// Separation config
     pub option: TokenizerOption,
 }
 
@@ -21,6 +23,7 @@ impl Default for CangJieTokenizer {
 impl<'a> ::tantivy::tokenizer::Tokenizer<'a> for CangJieTokenizer {
     type TokenStreamImpl = CangjieTokenStream<'a>;
 
+    /// Cut text into tokens
     fn token_stream(&self, text: &'a str) -> Self::TokenStreamImpl {
         let result = match self.option {
             TokenizerOption::All => self.worker.cut_all(text),

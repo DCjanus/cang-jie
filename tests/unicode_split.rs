@@ -23,7 +23,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     let mut schema_builder = SchemaBuilder::default();
 
     let text_indexing = TextFieldIndexing::default()
-        .set_tokenizer("cang_jie")
+        .set_tokenizer("cang_jie") // Set custom tokenizer
         .set_index_option(IndexRecordOption::WithFreqsAndPositions);
     let text_options = TextOptions::default()
         .set_indexing_options(text_indexing)
@@ -33,7 +33,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     let schema = schema_builder.build();
 
     let index = Index::create(RAMDirectory::create(), schema.clone())?;
-    index.tokenizers().register("cang_jie", tokenizer());
+    index.tokenizers().register("cang_jie", tokenizer()); // Build cang-jie Tokenizer
 
     let mut index_writer = index.writer(50 * 1024 * 1024)?;
 
@@ -84,7 +84,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
 
 fn tokenizer() -> CangJieTokenizer {
     CangJieTokenizer {
-        worker: Arc::new(Jieba::empty()),
+        worker: Arc::new(Jieba::empty()), // empty dictionary
         option: TokenizerOption::Unicode,
     }
 }
