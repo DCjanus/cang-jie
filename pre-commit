@@ -2,6 +2,5 @@
 
 set -e
 cargo +nightly fmt --all -- --check
-cargo clippy -- -D warnings
 cargo test --verbose --all
 set +e
