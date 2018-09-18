@@ -7,3 +7,7 @@ authors = ["DCjanus <DCjanus@dcjanus.com>"]
 tantivy = "0.7"
 jieba-rs = "0.2"
 log = "0.4"
+
+[dev-dependencies]
+chrono = "0.4"
+flexi_logger = "0.9"
