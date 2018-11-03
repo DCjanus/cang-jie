@@ -2,6 +2,7 @@
 name = "cang-jie"
 version = "0.1.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
+edition = "2018"
 description = "A Chinese tokenizer for tantivy"
 license = "MIT"
 repository = "https://github.com/DCjanus/cang-jie"
@@ -15,4 +16,4 @@ log = "0.4"
 
 [dev-dependencies]
 chrono = "0.4"
-flexi_logger = "0.9"
+flexi_logger = "0.10"

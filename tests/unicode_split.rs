@@ -1,9 +1,3 @@
-extern crate cang_jie;
-extern crate chrono;
-extern crate flexi_logger;
-extern crate jieba_rs;
-extern crate tantivy;
-
 use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
 use chrono::Local;
 use flexi_logger::{Logger, Record};
@@ -70,7 +64,8 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
                 .text()
                 .unwrap()
                 .to_string()
-        }).collect::<HashSet<_>>();
+        })
+        .collect::<HashSet<_>>();
 
     let expect = HashSet::from_iter(vec![
         "这个是南京长".to_string(),

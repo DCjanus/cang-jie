@@ -1,7 +1,7 @@
+use crate::{options::TokenizerOption, stream::CangjieTokenStream};
 use jieba_rs::Jieba;
-use options::TokenizerOption;
+use log::trace;
 use std::sync::Arc;
-use stream::CangjieTokenStream;
 
 #[derive(Clone, Debug)]
 pub struct CangJieTokenizer {
@@ -36,7 +36,8 @@ impl<'a> ::tantivy::tokenizer::Tokenizer<'a> for CangJieTokenizer {
                     .fold((0usize, vec![]), |(offset, mut result), the_char| {
                         result.push(&text[offset..offset + the_char.len_utf8()]);
                         (offset + the_char.len_utf8(), result)
-                    }).1
+                    })
+                    .1
             }
         };
         trace!("{:?}->{:?}", text, result);
