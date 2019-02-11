@@ -3,9 +3,7 @@ use chrono::Local;
 use flexi_logger::{Logger, Record};
 use jieba_rs::Jieba;
 use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
-use tantivy::{
-    collector::TopCollector, directory::RAMDirectory, query::QueryParser, schema::*, Index,
-};
+use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index};
 
 #[test]
 fn full_test_unicode_split() -> tantivy::Result<()> {
@@ -26,38 +24,26 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     let title = schema_builder.add_text_field("title", text_options.clone());
     let schema = schema_builder.build();
 
-    let index = Index::create(RAMDirectory::create(), schema.clone())?;
+    let index = Index::create_in_ram(schema.clone());
     index.tokenizers().register(CANG_JIE, tokenizer()); // Build cang-jie Tokenizer
 
     let mut index_writer = index.writer(50 * 1024 * 1024)?;
-
-    let mut doc = Document::default();
-    doc.add_text(title, "南京长江大桥");
-    index_writer.add_document(doc);
-
-    let mut doc = Document::default();
-    doc.add_text(title, "这个是长江");
-    index_writer.add_document(doc);
-
-    let mut doc = Document::default();
-    doc.add_text(title, "这个是南京长");
-    index_writer.add_document(doc);
-
+    index_writer.add_document(doc! { title => "南京长江大桥" });
+    index_writer.add_document(doc! { title => "这个是长江" });
+    index_writer.add_document(doc! { title => "这个是南京长" });
     index_writer.commit()?;
 
     index.load_searchers()?;
     let searcher = index.searcher();
 
     let query = QueryParser::for_index(&index, vec![title]).parse_query("京长")?;
-    let mut top_collector = TopCollector::with_limit(10000);
-    searcher.search(query.as_ref(), &mut top_collector)?;
+    let top_docs = searcher.search(query.as_ref(), &TopDocs::with_limit(10000))?;
 
-    let actual = top_collector
-        .docs()
+    let actual = top_docs
         .into_iter()
         .map(|x| {
             searcher
-                .doc(x)
+                .doc(x.1)
                 .unwrap()
                 .get_first(title)
                 .unwrap()
