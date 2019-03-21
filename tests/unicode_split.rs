@@ -33,8 +33,8 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     index_writer.add_document(doc! { title => "这个是南京长" });
     index_writer.commit()?;
 
-    index.load_searchers()?;
-    let searcher = index.searcher();
+    let reader = index.reader()?;
+    let searcher = reader.searcher();
 
     let query = QueryParser::for_index(&index, vec![title]).parse_query("京长")?;
     let top_docs = searcher.search(query.as_ref(), &TopDocs::with_limit(10000))?;
