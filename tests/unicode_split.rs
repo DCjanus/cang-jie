@@ -1,5 +1,4 @@
 use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
-use chrono::Local;
 use flexi_logger::{Logger, Record};
 use jieba_rs::Jieba;
 use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
@@ -70,11 +69,15 @@ fn tokenizer() -> CangJieTokenizer {
     }
 }
 
-pub fn logger_format(w: &mut io::Write, record: &Record) -> Result<(), io::Error> {
+pub fn logger_format(
+    w: &mut io::Write,
+    now: &mut flexi_logger::DeferredNow,
+    record: &Record,
+) -> Result<(), io::Error> {
     write!(
         w,
         "[{}] {} [{}:{}] {}",
-        Local::now().format("%Y-%m-%d %H:%M:%S %:z"),
+        now.now().format("%Y-%m-%d %H:%M:%S %:z"),
         record.level(),
         record.module_path().unwrap_or("<unnamed>"),
         record.line().unwrap_or(0),
