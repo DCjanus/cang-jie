@@ -20,10 +20,10 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
         .set_indexing_options(text_indexing)
         .set_stored();
 
-    let title = schema_builder.add_text_field("title", text_options.clone());
+    let title = schema_builder.add_text_field("title", text_options);
     let schema = schema_builder.build();
 
-    let index = Index::create_in_ram(schema.clone());
+    let index = Index::create_in_ram(schema);
     index.tokenizers().register(CANG_JIE, tokenizer()); // Build cang-jie Tokenizer
 
     let mut index_writer = index.writer(50 * 1024 * 1024)?;
@@ -52,10 +52,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
         })
         .collect::<HashSet<_>>();
 
-    let expect = HashSet::from_iter(vec![
-        "这个是南京长".to_string(),
-        "南京长江大桥".to_string(),
-    ]);
+    let expect = HashSet::from_iter(vec!["这个是南京长".to_string(), "南京长江大桥".to_string()]);
 
     assert_eq!(actual, expect);
 
