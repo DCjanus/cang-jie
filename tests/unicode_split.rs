@@ -70,7 +70,7 @@ fn tokenizer() -> CangJieTokenizer {
 }
 
 pub fn logger_format(
-    w: &mut io::Write,
+    w: &mut dyn io::Write,
     now: &mut flexi_logger::DeferredNow,
     record: &Record,
 ) -> Result<(), io::Error> {
