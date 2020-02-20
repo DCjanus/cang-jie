@@ -2,6 +2,7 @@ use crate::{options::TokenizerOption, stream::CangjieTokenStream};
 use jieba_rs::Jieba;
 use log::trace;
 use std::sync::Arc;
+use tantivy::tokenizer::BoxTokenStream;
 
 #[derive(Clone, Debug)]
 pub struct CangJieTokenizer {
@@ -20,11 +21,9 @@ impl Default for CangJieTokenizer {
     }
 }
 
-impl<'a> ::tantivy::tokenizer::Tokenizer<'a> for CangJieTokenizer {
-    type TokenStreamImpl = CangjieTokenStream<'a>;
-
+impl ::tantivy::tokenizer::Tokenizer for CangJieTokenizer {
     /// Cut text into tokens
-    fn token_stream(&self, text: &'a str) -> Self::TokenStreamImpl {
+    fn token_stream<'a>(&self, text: &'a str) -> BoxTokenStream<'a> {
         let result = match self.option {
             TokenizerOption::All => self.worker.cut_all(text),
             TokenizerOption::Default { hmm: use_hmm } => self.worker.cut(text, use_hmm),
@@ -41,6 +40,6 @@ impl<'a> ::tantivy::tokenizer::Tokenizer<'a> for CangJieTokenizer {
             }
         };
         trace!("{:?}->{:?}", text, result);
-        CangjieTokenStream::new(result)
+        BoxTokenStream::from(CangjieTokenStream::new(result))
     }
 }
