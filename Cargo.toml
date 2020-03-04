@@ -15,4 +15,4 @@ jieba-rs = { version = "0.4.10", default-features = false }
 log = "0.4.8"
 
 [dev-dependencies]
-flexi_logger = "0.14.8"
+flexi_logger = "0.15.1"
