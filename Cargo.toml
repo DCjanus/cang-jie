@@ -1,6 +1,6 @@
 [package]
 name = "cang-jie"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
 edition = "2018"
 description = "A Chinese tokenizer for tantivy"
@@ -15,4 +15,4 @@ jieba-rs = { version = "0.5.0", default-features = false }
 log = "0.4.8"
 
 [dev-dependencies]
-flexi_logger = "0.14.8"
+flexi_logger = "0.15.2"
