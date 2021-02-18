@@ -1,6 +1,6 @@
 [package]
 name = "cang-jie"
-version = "0.10.0"
+version = "0.11.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
 edition = "2018"
 description = "A Chinese tokenizer for tantivy"
@@ -11,8 +11,8 @@ keywords = ["search", "tokenizer", "Chinese", "tantivy"]
 
 [dependencies]
 tantivy = "0.14.0"
-jieba-rs = { version = "0.6.0", default-features = false }
-log = "0.4.11"
+jieba-rs = { version = "0.6.2", default-features = false }
+log = "0.4.14"
 
 [dev-dependencies]
-flexi_logger = "0.15.11"
+flexi_logger = "0.17.1"
