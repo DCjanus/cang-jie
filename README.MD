@@ -1,7 +1,6 @@
 # cang-jie([仓颉](https://en.wikipedia.org/wiki/Cangjie))
 
 [![Crates.io](https://img.shields.io/crates/v/cang-jie.svg)](https://crates.io/crates/cang-jie)
-[![Build Status](https://travis-ci.org/DCjanus/cang-jie.svg?branch=master)](https://travis-ci.org/DCjanus/cang-jie)
 [![latest document](https://img.shields.io/badge/latest-document-ff69b4.svg)](https://docs.rs/cang-jie/)
 [![dependency status](https://deps.rs/repo/github/dcjanus/cang-jie/status.svg)](https://deps.rs/repo/github/dcjanus/cang-jie)
 
