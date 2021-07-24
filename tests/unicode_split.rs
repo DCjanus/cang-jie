@@ -6,7 +6,8 @@ use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index};
 
 #[test]
 fn full_test_unicode_split() -> tantivy::Result<()> {
-    Logger::with_env_or_str("cang_jie=trace,error")
+    Logger::try_with_env_or_str("cang_jie=trace,error")
+        .expect("failed to init logger")
         .format(logger_format)
         .start()
         .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
