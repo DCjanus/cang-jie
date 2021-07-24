@@ -2,6 +2,6 @@ unstable_features = true
 
 newline_style = "Unix"
 reorder_impl_items = true
-merge_imports = true
+imports_granularity = "Crate"
 
 edition = "2018"

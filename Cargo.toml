@@ -10,9 +10,9 @@ readme = "README.MD"
 keywords = ["search", "tokenizer", "Chinese", "tantivy"]
 
 [dependencies]
-tantivy = "0.14.0"
-jieba-rs = { version = "0.6.2", default-features = false }
+tantivy = "0.15.3"
+jieba-rs = { version = "0.6.5", default-features = false }
 log = "0.4.14"
 
 [dev-dependencies]
-flexi_logger = "0.17.1"
+flexi_logger = "0.18.0"
