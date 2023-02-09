@@ -28,9 +28,9 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     index.tokenizers().register(CANG_JIE, tokenizer()); // Build cang-jie Tokenizer
 
     let mut index_writer = index.writer(50 * 1024 * 1024)?;
-    index_writer.add_document(doc! { title => "南京长江大桥" });
-    index_writer.add_document(doc! { title => "这个是长江" });
-    index_writer.add_document(doc! { title => "这个是南京长" });
+    index_writer.add_document(doc! { title => "南京长江大桥" })?;
+    index_writer.add_document(doc! { title => "这个是长江" })?;
+    index_writer.add_document(doc! { title => "这个是南京长" })?;
     index_writer.commit()?;
 
     let reader = index.reader()?;
@@ -47,7 +47,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
                 .unwrap()
                 .get_first(title)
                 .unwrap()
-                .text()
+                .as_text()
                 .unwrap()
                 .to_string()
         })
