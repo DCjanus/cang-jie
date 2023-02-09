@@ -1,6 +1,6 @@
 [package]
 name = "cang-jie"
-version = "0.14.0"
+version = "0.15.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
 edition = "2021"
 description = "A Chinese tokenizer for tantivy"
@@ -16,3 +16,4 @@ log = "0.4.17"
 
 [dev-dependencies]
 flexi_logger = "0.25.1"
+

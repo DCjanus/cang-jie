@@ -3,7 +3,6 @@ use flexi_logger::{Logger, Record};
 use jieba_rs::Jieba;
 use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
 use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index};
-use time::format_description::well_known::Rfc3339;
 
 #[test]
 fn full_test_unicode_split() -> tantivy::Result<()> {
@@ -76,7 +75,7 @@ pub fn logger_format(
     write!(
         w,
         "[{}] {} [{}:{}] {}",
-        now.now().format(&Rfc3339).unwrap(),
+        now.now().format("%Y-%m-%d %H:%M:%S %:z"),
         record.level(),
         record.module_path().unwrap_or("<unnamed>"),
         record.line().unwrap_or(0),
