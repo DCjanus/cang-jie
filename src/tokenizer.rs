@@ -41,6 +41,6 @@ impl ::tantivy::tokenizer::Tokenizer for CangJieTokenizer {
             }
         };
         trace!("{:?}->{:?}", text, result);
-        CangjieTokenStream::new(result)
+        CangjieTokenStream::new(text, result)
     }
 }
