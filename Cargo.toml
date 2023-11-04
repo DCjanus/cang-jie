@@ -1,6 +1,6 @@
 [package]
 name = "cang-jie"
-version = "0.17.0"
+version = "0.18.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
 edition = "2021"
 description = "A Chinese tokenizer for tantivy"
