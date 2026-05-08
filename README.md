@@ -46,7 +46,7 @@ See [unicode_split.rs](./tests/unicode_split.rs) for a complete searchable examp
 
 This crate uses Rust 2024 and requires Rust 1.88 or newer.
 
-Run the local checks with:
+Install [prek](https://prek.j178.dev/installation/), then run the local checks with:
 
 ```console
 prek run --all-files
