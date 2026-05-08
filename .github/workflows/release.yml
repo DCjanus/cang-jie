@@ -10,7 +10,9 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
-      - run: rustup toolchain install stable --profile minimal
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
       - name: Check release tag matches crate version
         run: |
           tag_version="${GITHUB_REF_NAME#v}"
@@ -22,6 +24,6 @@ jobs:
           fi
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
-      - run: cargo +stable publish
+      - run: cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
