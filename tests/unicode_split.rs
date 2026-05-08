@@ -43,11 +43,11 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
         .into_iter()
         .map(|x| {
             searcher
-                .doc(x.1)
+                .doc::<TantivyDocument>(x.1)
                 .unwrap()
                 .get_first(title)
                 .unwrap()
-                .as_text()
+                .as_str()
                 .unwrap()
                 .to_string()
         })

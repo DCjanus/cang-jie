@@ -7,7 +7,7 @@ use tantivy::{
     doc,
     query::QueryParser,
     schema::{IndexRecordOption, SchemaBuilder, TextFieldIndexing, TextOptions},
-    Index, SnippetGenerator,
+    Index, SnippetGenerator, TantivyDocument,
 };
 
 #[test]
@@ -41,7 +41,7 @@ fn test_tokenizer_position() -> tantivy::Result<()> {
 
     let snippet = SnippetGenerator::create(&searcher, &query, title).unwrap();
     for doc in top_docs.iter() {
-        let s = snippet.snippet_from_doc(&searcher.doc(doc.1).unwrap());
+        let s = snippet.snippet_from_doc(&searcher.doc::<TantivyDocument>(doc.1).unwrap());
         dbg!(s.to_html());
     }
     Ok(())
