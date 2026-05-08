@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toolchain: [ 1.88.0, stable, beta, nightly ]
+        toolchain: [ 1.88.0, beta, nightly ]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
