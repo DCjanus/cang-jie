@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 pub use crate::{
     options::TokenizerOption, stream::CangjieTokenStream, tokenizer::CangJieTokenizer,
 };

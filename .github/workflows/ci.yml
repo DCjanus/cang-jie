@@ -24,6 +24,8 @@ jobs:
           toolchain: nightly
           components: clippy, rustfmt
       - uses: j178/prek-action@v2
+        with:
+          extra-args: --all-files --skip cargo-test
 
   test:
     runs-on: ubuntu-latest
