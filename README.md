@@ -18,13 +18,13 @@ As of now, only support UTF-8.
     let text_options = TextOptions::default()
         .set_indexing_options(text_indexing)
         .set_stored();
-    // ... Some code   
+    // ... Some code
      let index = Index::create(RAMDirectory::create(), schema.clone())?;
      let tokenizer = CangJieTokenizer {
                         worker: Arc::new(Jieba::empty()), // empty dictionary
                         option: TokenizerOption::Unicode,
                      };
-     index.tokenizers().register(CANG_JIE, tokenizer); 
+     index.tokenizers().register(CANG_JIE, tokenizer);
     // ... Some code
 ```
 

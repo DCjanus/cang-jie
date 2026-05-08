@@ -1,4 +1,22 @@
 [[repos]]
+repo = "builtin"
+hooks = [
+  { id = "trailing-whitespace", priority = 0 },
+  { id = "end-of-file-fixer", priority = 1 },
+  { id = "fix-byte-order-marker", priority = 2 },
+  { id = "check-toml", priority = 10 },
+  { id = "check-yaml", priority = 10 },
+  { id = "check-added-large-files", priority = 10 },
+  { id = "check-case-conflict", priority = 10 },
+  { id = "check-illegal-windows-names", priority = 10 },
+  { id = "check-merge-conflict", priority = 10 },
+  { id = "check-symlinks", priority = 10 },
+  { id = "destroyed-symlinks", priority = 10 },
+  { id = "forbid-new-submodules", priority = 10 },
+  { id = "detect-private-key", priority = 10 },
+]
+
+[[repos]]
 repo = "local"
 
 [[repos.hooks]]
@@ -8,7 +26,7 @@ language = "system"
 entry = "cargo +nightly fmt --all -- --check"
 types_or = ["rust"]
 pass_filenames = false
-priority = 0
+priority = 20
 
 [[repos.hooks]]
 id = "cargo-test"
@@ -17,4 +35,4 @@ language = "system"
 entry = "cargo test --verbose --all"
 always_run = true
 pass_filenames = false
-priority = 10
+priority = 30
