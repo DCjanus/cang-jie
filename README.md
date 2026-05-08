@@ -1,4 +1,4 @@
-# cang-jie
+# cang-jie([仓颉](https://en.wikipedia.org/wiki/Cangjie))
 
 [![Crates.io](https://img.shields.io/crates/v/cang-jie.svg)](https://crates.io/crates/cang-jie)
 [![latest document](https://img.shields.io/badge/latest-document-ff69b4.svg)](https://docs.rs/cang-jie/)
