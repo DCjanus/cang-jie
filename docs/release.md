@@ -6,8 +6,6 @@ This crate publishes to crates.io from GitHub Actions when a `vX.Y.Z` tag is pus
 
 - Work from the latest `master`.
 - Confirm `Cargo.toml` has the version being released.
-- Run `prek run --all-files`.
-- Run `cargo publish --dry-run`.
 - Confirm the latest `master` CI run is green.
 
 ## Tag Version Rule
@@ -34,4 +32,3 @@ Keep release notes short and focused:
 - Write a compact `Highlights` section.
 - Keep `Breaking Changes` separate when compatibility changes exist.
 - Preserve GitHub's generated `What's Changed`, `New Contributors`, and `Full Changelog` sections when useful.
-- Set the changelog comparison range to the crate version range, not necessarily the previous GitHub Release. For example, `v0.18.0...v0.19.0`.
