@@ -3,6 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/cang-jie.svg)](https://crates.io/crates/cang-jie)
 [![latest document](https://img.shields.io/badge/latest-document-ff69b4.svg)](https://docs.rs/cang-jie/)
 [![dependency status](https://deps.rs/repo/github/dcjanus/cang-jie/status.svg)](https://deps.rs/repo/github/dcjanus/cang-jie)
+[![codecov](https://codecov.io/gh/DCjanus/cang-jie/branch/master/graph/badge.svg)](https://app.codecov.io/gh/DCjanus/cang-jie)
 
 Chinese tokenizer integration for [Tantivy](https://github.com/quickwit-oss/tantivy), backed by [jieba-rs](https://github.com/messense/jieba-rs).
 
