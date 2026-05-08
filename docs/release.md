@@ -11,6 +11,7 @@ This crate publishes to crates.io from GitHub Actions when a `vX.Y.Z` tag is pus
 ## Tag Version Rule
 
 Release tags use the `vX.Y.Z` format. The version in the tag must match `package.version` in [Cargo.toml](../Cargo.toml).
+Versions must follow [Semantic Versioning](https://semver.org/).
 
 [release.yml](../.github/workflows/release.yml) checks this before authenticating to crates.io or running `cargo publish`.
 
@@ -32,3 +33,16 @@ Keep release notes short and focused:
 - Write a compact `Highlights` section.
 - Keep `Breaking Changes` separate when compatibility changes exist.
 - Preserve GitHub's generated `What's Changed`, `New Contributors`, and `Full Changelog` sections when useful.
+
+Create the release from a local notes file and GitHub's generated sections:
+
+```console
+gh release create vX.Y.Z \
+  --verify-tag \
+  --notes-start-tag vA.B.C \
+  --title "vX.Y.Z" \
+  --notes-file /tmp/cang-jie-vX.Y.Z-notes.md \
+  --generate-notes
+```
+
+Here, `vX.Y.Z` is `tag_name`, and `--notes-start-tag vA.B.C` is `previous_tag_name`.
