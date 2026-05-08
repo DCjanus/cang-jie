@@ -24,12 +24,15 @@ jobs:
           toolchain: nightly
           components: clippy, rustfmt
       - uses: j178/prek-action@v2
+        with:
+          extra-args: --all-files --skip cargo-test
 
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toolchain: [ 1.88.0, stable, beta, nightly ]
+        # Stable is covered by the coverage job, which runs instrumented tests.
+        toolchain: [ 1.88.0, beta, nightly ]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
@@ -45,3 +48,22 @@ jobs:
         with:
           toolchain: stable
       - run: cargo publish --dry-run
+
+  coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          components: llvm-tools-preview
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+      - uses: codecov/codecov-action@v6
+        with:
+          files: lcov.info
+          fail_ci_if_error: true
+          use_oidc: true

@@ -37,7 +37,7 @@ fn full_test_unicode_split() -> tantivy::Result<()> {
     let searcher = reader.searcher();
 
     let query = QueryParser::for_index(&index, vec![title]).parse_query("京长")?;
-    let top_docs = searcher.search(query.as_ref(), &TopDocs::with_limit(10000))?;
+    let top_docs = searcher.search(query.as_ref(), &TopDocs::with_limit(10000).order_by_score())?;
 
     let actual = top_docs
         .into_iter()

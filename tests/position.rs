@@ -3,11 +3,12 @@ use std::sync::Arc;
 use cang_jie::{CANG_JIE, CangJieTokenizer, TokenizerOption};
 use jieba_rs::Jieba;
 use tantivy::{
-    Index, SnippetGenerator, TantivyDocument,
+    Index, TantivyDocument,
     collector::TopDocs,
     doc,
     query::QueryParser,
     schema::{IndexRecordOption, SchemaBuilder, TextFieldIndexing, TextOptions},
+    snippet::SnippetGenerator,
 };
 
 #[test]
@@ -37,7 +38,7 @@ fn test_tokenizer_position() -> tantivy::Result<()> {
     let searcher = reader.searcher();
 
     let query = QueryParser::for_index(&index, vec![title]).parse_query("南京")?;
-    let top_docs = searcher.search(query.as_ref(), &TopDocs::with_limit(10000))?;
+    let top_docs = searcher.search(query.as_ref(), &TopDocs::with_limit(10000).order_by_score())?;
 
     let snippet = SnippetGenerator::create(&searcher, &query, title).unwrap();
     for doc in top_docs.iter() {

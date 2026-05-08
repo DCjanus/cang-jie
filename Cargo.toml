@@ -1,6 +1,6 @@
 [package]
 name = "cang-jie"
-version = "0.18.0"
+version = "0.19.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
 edition = "2024"
 rust-version = "1.88"
@@ -11,10 +11,10 @@ readme = "README.md"
 keywords = ["search", "tokenizer", "Chinese", "tantivy"]
 
 [dependencies]
-tantivy = "0.22.0"
-jieba-rs = { version = "0.7.0", default-features = false }
-log = "0.4.22"
+jieba-rs = { version = "0.9.0", default-features = false }
+log = "0.4.29"
+tantivy = "0.26.1"
 
 [dev-dependencies]
-jieba-rs = { version = "0.7.0", default-features = true }
-flexi_logger = "0.29.6"
+flexi_logger = "0.31.8"
+jieba-rs = { version = "0.9.0", default-features = true }
