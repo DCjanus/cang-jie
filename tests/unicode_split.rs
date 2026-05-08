@@ -1,8 +1,8 @@
-use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
+use cang_jie::{CANG_JIE, CangJieTokenizer, TokenizerOption};
 use flexi_logger::{Logger, Record};
 use jieba_rs::Jieba;
 use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
-use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index};
+use tantivy::{Index, collector::TopDocs, doc, query::QueryParser, schema::*};
 
 #[test]
 fn full_test_unicode_split() -> tantivy::Result<()> {

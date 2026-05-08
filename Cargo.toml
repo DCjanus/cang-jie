@@ -2,11 +2,12 @@
 name = "cang-jie"
 version = "0.18.0"
 authors = ["DCjanus <DCjanus@dcjanus.com>"]
-edition = "2021"
+edition = "2024"
+rust-version = "1.88"
 description = "A Chinese tokenizer for tantivy"
 license = "MIT"
 repository = "https://github.com/DCjanus/cang-jie"
-readme = "README.MD"
+readme = "README.md"
 keywords = ["search", "tokenizer", "Chinese", "tantivy"]
 
 [dependencies]
