@@ -1,0 +1,20 @@
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "cargo-fmt"
+name = "cargo fmt"
+language = "system"
+entry = "cargo +nightly fmt --all -- --check"
+types_or = ["rust"]
+pass_filenames = false
+priority = 0
+
+[[repos.hooks]]
+id = "cargo-test"
+name = "cargo test"
+language = "system"
+entry = "cargo test --verbose --all"
+always_run = true
+pass_filenames = false
+priority = 10
