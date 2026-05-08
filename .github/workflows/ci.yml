@@ -16,14 +16,13 @@ jobs:
         with:
           toolchain: nightly
           components: clippy, rustfmt
-      - run: cargo fmt --all -- --check
-      - run: cargo clippy -- -D warnings
+      - uses: j178/prek-action@v2
 
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toolchain: [ stable, beta, nightly ]
+        toolchain: [ 1.88.0, stable, beta, nightly ]
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master

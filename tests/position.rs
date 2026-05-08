@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
-use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
+use cang_jie::{CANG_JIE, CangJieTokenizer, TokenizerOption};
 use jieba_rs::Jieba;
 use tantivy::{
+    Index, SnippetGenerator, TantivyDocument,
     collector::TopDocs,
     doc,
     query::QueryParser,
     schema::{IndexRecordOption, SchemaBuilder, TextFieldIndexing, TextOptions},
-    Index, SnippetGenerator, TantivyDocument,
 };
 
 #[test]

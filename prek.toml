@@ -28,6 +28,14 @@ types_or = ["rust"]
 pass_filenames = false
 
 [[repos.hooks]]
+id = "cargo-clippy"
+name = "cargo clippy"
+language = "system"
+entry = "cargo +nightly clippy -- -D warnings"
+always_run = true
+pass_filenames = false
+
+[[repos.hooks]]
 id = "cargo-test"
 name = "cargo test"
 language = "system"
