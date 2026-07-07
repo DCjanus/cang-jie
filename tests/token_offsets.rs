@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use cang_jie::{CangJieTokenizer, TokenizerOption};
+use cang_jie::{CangJieTokenizer, CangjieTokenStream, TokenizerOption};
 use jieba_rs::Jieba;
 use tantivy::tokenizer::{Token, TokenStream, Tokenizer};
 
@@ -23,6 +23,25 @@ fn unicode_tokens_keep_byte_offsets() {
         },
         text,
     );
+
+    let actual = tokens
+        .iter()
+        .map(|token| (token.text.as_str(), token.offset_from, token.offset_to))
+        .collect::<Vec<_>>();
+
+    assert_eq!(actual, vec![("南", 0, 3), ("a", 3, 4), ("京", 4, 7)]);
+}
+
+#[test]
+fn public_token_stream_constructor_keeps_slice_offsets() {
+    let text = "南a京";
+    let slices = vec![&text[..3], &text[3..4], &text[4..]];
+    let mut stream = CangjieTokenStream::new(text, slices);
+
+    let mut tokens = Vec::new();
+    while stream.advance() {
+        tokens.push(stream.token().clone());
+    }
 
     let actual = tokens
         .iter()
