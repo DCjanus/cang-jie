@@ -197,6 +197,7 @@ def run_public_dependency_smoke(repo: Path, baseline_tag: str) -> None:
     )
     with tempfile.TemporaryDirectory(prefix="cang-jie-public-dep-") as tmp:
         crate = Path(tmp)
+        repo_path = toml_literal(str(repo))
         (crate / "src").mkdir()
         (crate / "Cargo.toml").write_text(
             textwrap.dedent(
@@ -207,7 +208,7 @@ def run_public_dependency_smoke(repo: Path, baseline_tag: str) -> None:
                 edition = "2024"
 
                 [dependencies]
-                cang-jie = {{ path = {str(repo)!r} }}
+                cang-jie = {{ path = {repo_path} }}
                 jieba-rs = {jieba_requirement}
                 """
             ),
@@ -299,6 +300,7 @@ def self_test() -> None:
         render_dependency_requirement({"version": "0.9.0", "default-features": False})
         == '{ version = "0.9.0", default-features = false }'
     )
+    assert toml_literal(r"C:\tmp\cang-jie") == r'"C:\\tmp\\cang-jie"'
     assert not is_stable(parse_tag_version("v0.20.0-alpha.1"))
     console.print("self-test passed")
 
