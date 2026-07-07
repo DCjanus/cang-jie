@@ -1,9 +1,25 @@
 use tantivy::tokenizer::Token;
 
 #[derive(Debug)]
+pub(crate) struct CangjieToken<'a> {
+    pub word: &'a str,
+    pub byte_start: usize,
+    pub byte_end: usize,
+}
+
+impl<'a> CangjieToken<'a> {
+    pub fn new(word: &'a str, byte_start: usize, byte_end: usize) -> Self {
+        CangjieToken {
+            word,
+            byte_start,
+            byte_end,
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct CangjieTokenStream<'a> {
-    src: &'a str,
-    result: Vec<&'a str>,
+    result: Vec<CangjieToken<'a>>,
     // Begin with 1
     index: usize,
     token: Token,
@@ -11,8 +27,19 @@ pub struct CangjieTokenStream<'a> {
 
 impl<'a> CangjieTokenStream<'a> {
     pub fn new(src: &'a str, result: Vec<&'a str>) -> Self {
+        let base = src.as_ptr() as usize;
+        let result = result
+            .into_iter()
+            .map(|word| {
+                let byte_start = word.as_ptr() as usize - base;
+                CangjieToken::new(word, byte_start, byte_start + word.len())
+            })
+            .collect();
+        Self::from_tokens(result)
+    }
+
+    pub(crate) fn from_tokens(result: Vec<CangjieToken<'a>>) -> Self {
         CangjieTokenStream {
-            src,
             result,
             index: 0,
             token: Token::default(),
@@ -23,15 +50,13 @@ impl<'a> CangjieTokenStream<'a> {
 impl<'a> ::tantivy::tokenizer::TokenStream for CangjieTokenStream<'a> {
     fn advance(&mut self) -> bool {
         if self.index < self.result.len() {
-            let current_word = self.result[self.index];
-            let offset_from = current_word.as_ptr() as usize - self.src.as_ptr() as usize;
-            let offset_to = offset_from + current_word.len();
+            let current_token = &self.result[self.index];
 
             self.token = Token {
-                offset_from,
-                offset_to,
+                offset_from: current_token.byte_start,
+                offset_to: current_token.byte_end,
                 position: self.index,
-                text: current_word.to_string(),
+                text: current_token.word.to_string(),
                 position_length: 1,
             };
 
