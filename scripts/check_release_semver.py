@@ -160,13 +160,13 @@ def toml_literal(value: object) -> str:
     fail(f"unsupported Cargo.toml dependency value: {value!r}")
 
 
-def render_dependency_requirement(dependency: object) -> str | None:
+def render_public_constructor_jieba_requirement(dependency: object) -> str | None:
     if isinstance(dependency, str):
         return toml_literal(dependency)
     if not isinstance(dependency, dict):
         return None
 
-    supported_keys = ["version", "default-features", "features"]
+    supported_keys = ["version", "features"]
     items = [
         f"{key} = {toml_literal(dependency[key])}"
         for key in supported_keys
@@ -181,7 +181,7 @@ def baseline_jieba_requirement(repo: Path, baseline_tag: str) -> str | None:
     )
     manifest = tomllib.loads(cargo_toml)
     dependency = manifest.get("dependencies", {}).get("jieba-rs")
-    return render_dependency_requirement(dependency)
+    return render_public_constructor_jieba_requirement(dependency)
 
 
 def run_public_dependency_smoke(repo: Path, baseline_tag: str) -> None:
@@ -298,8 +298,10 @@ def self_test() -> None:
         ],
     ) == (parse_tag_version("v0.19.3"), "v0.19.3")
     assert (
-        render_dependency_requirement({"version": "0.9.0", "default-features": False})
-        == '{ version = "0.9.0", default-features = false }'
+        render_public_constructor_jieba_requirement(
+            {"version": "0.9.0", "default-features": False}
+        )
+        == '{ version = "0.9.0" }'
     )
     assert toml_literal(r"C:\tmp\cang-jie") == r'"C:\\tmp\\cang-jie"'
     assert error_console.stderr

@@ -33,7 +33,7 @@ Maintenance releases are allowed after a newer release line only when the tag ha
 
 Pre-release tags such as `v0.20.0-alpha.1` currently validate the tag/Cargo version match but skip strict SemVer enforcement. Define a release-line policy before relying on pre-release tags for compatibility guarantees.
 
-For compatible stable release lines, the gate runs [cargo-semver-checks](https://github.com/obi1kenobi/cargo-semver-checks). It also compiles a small downstream crate that uses the documented direct `CangJieTokenizer` construction pattern with the baseline `jieba-rs` requirement. This catches public dependency breaks that rustdoc-level SemVer checks may miss.
+For compatible stable release lines, the gate runs [cargo-semver-checks](https://github.com/obi1kenobi/cargo-semver-checks). It also compiles a small downstream crate that uses the documented direct `CangJieTokenizer` construction pattern with the baseline `jieba-rs` version and the default features needed by `Jieba::new()`. This catches public dependency breaks that rustdoc-level SemVer checks may miss.
 
 ## Publishing
 
