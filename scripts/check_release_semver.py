@@ -28,10 +28,11 @@ from rich.console import Console
 
 Version = semver.Version
 console = Console()
+error_console = Console(stderr=True)
 
 
 def fail(message: str) -> None:
-    console.print(message, style="red", stderr=True)
+    error_console.print(message, style="red")
     raise typer.Exit(1)
 
 
@@ -301,6 +302,7 @@ def self_test() -> None:
         == '{ version = "0.9.0", default-features = false }'
     )
     assert toml_literal(r"C:\tmp\cang-jie") == r'"C:\\tmp\\cang-jie"'
+    assert error_console.stderr
     assert not is_stable(parse_tag_version("v0.20.0-alpha.1"))
     console.print("self-test passed")
 
