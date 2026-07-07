@@ -25,7 +25,7 @@ The release workflow runs the release gate script before authenticating to crate
 
 For stable tags, the script selects the latest compatible baseline tag:
 
-- `0.y.z` patch releases compare against the latest lower `v0.y.*` tag.
+- `0.y.z` patch releases, where `y > 0`, compare against the latest lower `v0.y.*` tag.
 - `1.y.z` and later compare against the latest lower tag with the same major version.
 - New effective-major release lines, such as `v0.20.0` after `v0.19.0`, allow breaking changes and skip strict blocking.
 
