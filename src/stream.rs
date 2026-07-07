@@ -20,7 +20,7 @@ impl<'a> CangjieToken<'a> {
 #[derive(Debug)]
 pub struct CangjieTokenStream<'a> {
     result: Vec<CangjieToken<'a>>,
-    // Begin with 1
+    // Tantivy token positions are zero-based.
     index: usize,
     token: Token,
 }
