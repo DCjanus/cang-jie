@@ -149,18 +149,38 @@ def check_stable_version_progression(
     )
 
 
+def toml_literal(value: object) -> str:
+    if isinstance(value, str):
+        return json.dumps(value)
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return f"[{', '.join(json.dumps(item) for item in value)}]"
+    fail(f"unsupported Cargo.toml dependency value: {value!r}")
+
+
+def render_dependency_requirement(dependency: object) -> str | None:
+    if isinstance(dependency, str):
+        return toml_literal(dependency)
+    if not isinstance(dependency, dict):
+        return None
+
+    supported_keys = ["version", "default-features", "features"]
+    items = [
+        f"{key} = {toml_literal(dependency[key])}"
+        for key in supported_keys
+        if key in dependency
+    ]
+    return f"{{ {', '.join(items)} }}" if items else None
+
+
 def baseline_jieba_requirement(repo: Path, baseline_tag: str) -> str | None:
     cargo_toml = run(
         ["git", "show", f"{baseline_tag}:Cargo.toml"], cwd=repo, capture=True
     )
     manifest = tomllib.loads(cargo_toml)
     dependency = manifest.get("dependencies", {}).get("jieba-rs")
-    if isinstance(dependency, str):
-        return dependency
-    if isinstance(dependency, dict):
-        version = dependency.get("version")
-        return str(version) if version else None
-    return None
+    return render_dependency_requirement(dependency)
 
 
 def run_public_dependency_smoke(repo: Path, baseline_tag: str) -> None:
@@ -188,7 +208,7 @@ def run_public_dependency_smoke(repo: Path, baseline_tag: str) -> None:
 
                 [dependencies]
                 cang-jie = {{ path = {str(repo)!r} }}
-                jieba-rs = {jieba_requirement!r}
+                jieba-rs = {jieba_requirement}
                 """
             ),
             encoding="utf-8",
@@ -275,6 +295,10 @@ def self_test() -> None:
             (parse_tag_version("v0.20.0"), "v0.20.0"),
         ],
     ) == (parse_tag_version("v0.19.3"), "v0.19.3")
+    assert (
+        render_dependency_requirement({"version": "0.9.0", "default-features": False})
+        == '{ version = "0.9.0", default-features = false }'
+    )
     assert not is_stable(parse_tag_version("v0.20.0-alpha.1"))
     console.print("self-test passed")
 
