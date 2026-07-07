@@ -26,12 +26,23 @@ pub struct CangjieTokenStream<'a> {
 }
 
 impl<'a> CangjieTokenStream<'a> {
+    /// Create a token stream from slices borrowed from `src`.
+    ///
+    /// Every item in `result` must be a subslice of `src` so byte offsets can be
+    /// derived from the slice addresses.
     pub fn new(src: &'a str, result: Vec<&'a str>) -> Self {
         let base = src.as_ptr() as usize;
+        let end = base + src.len();
         let result = result
             .into_iter()
             .map(|word| {
-                let byte_start = word.as_ptr() as usize - base;
+                let word_start = word.as_ptr() as usize;
+                let word_end = word_start + word.len();
+                assert!(
+                    base <= word_start && word_end <= end,
+                    "token slice must be borrowed from src"
+                );
+                let byte_start = word_start - base;
                 CangjieToken::new(word, byte_start, byte_start + word.len())
             })
             .collect();

@@ -52,6 +52,15 @@ fn public_token_stream_constructor_keeps_slice_offsets() {
 }
 
 #[test]
+#[should_panic(expected = "token slice must be borrowed from src")]
+fn public_token_stream_constructor_rejects_unrelated_slices() {
+    let src = "南京";
+    let unrelated = "长江";
+
+    let _ = CangjieTokenStream::new(src, vec![unrelated]);
+}
+
+#[test]
 fn jieba_tokens_keep_valid_byte_offsets() {
     let text = "南京a长江";
     let options = [
