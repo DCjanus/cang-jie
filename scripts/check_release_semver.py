@@ -105,20 +105,34 @@ def compatible_baseline(
     return candidates[-1] if candidates else None
 
 
+def latest_compatible_existing_tag(
+    current: Version, tags: list[tuple[Version, str]]
+) -> tuple[Version, str] | None:
+    candidates = [
+        (version, tag)
+        for version, tag in tags
+        if version != current and is_compatible_line(current, version)
+    ]
+    return candidates[-1] if candidates else None
+
+
 def check_stable_version_progression(
     tag_name: str, current: Version, tags: list[tuple[Version, str]]
 ) -> None:
-    compatible = compatible_baseline(current, tags)
-    if compatible is not None:
-        _, previous_tag = compatible
+    latest_compatible = latest_compatible_existing_tag(current, tags)
+    if latest_compatible is not None:
+        latest_version, previous_tag = latest_compatible
+        if current <= latest_version:
+            fail(
+                f"{tag_name} is not greater than latest compatible release tag "
+                f"{previous_tag}."
+            )
         console.print(
             f"Checking version progression against previous compatible tag {previous_tag}."
         )
         return
 
-    existing = [
-        (version, tag) for version, tag in tags if version.compare(current) != 0
-    ]
+    existing = [(version, tag) for version, tag in tags if version != current]
     if not existing:
         console.print(f"{tag_name} is the first stable release tag.")
         return
@@ -253,6 +267,14 @@ def self_test() -> None:
         parse_tag_version("v1.3.0"),
         "v1.3.0",
     )
+    assert latest_compatible_existing_tag(
+        parse_tag_version("v0.19.2"),
+        [
+            (parse_tag_version("v0.19.0"), "v0.19.0"),
+            (parse_tag_version("v0.19.3"), "v0.19.3"),
+            (parse_tag_version("v0.20.0"), "v0.20.0"),
+        ],
+    ) == (parse_tag_version("v0.19.3"), "v0.19.3")
     assert not is_stable(parse_tag_version("v0.20.0-alpha.1"))
     console.print("self-test passed")
 
