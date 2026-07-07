@@ -10,9 +10,12 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
+      - uses: taiki-e/install-action@cargo-semver-checks
       - name: Check release tag matches crate version
         run: |
           tag_version="${GITHUB_REF_NAME#v}"
@@ -22,6 +25,8 @@ jobs:
             echo "release tag v${tag_version} does not match Cargo.toml version ${crate_version}" >&2
             exit 1
           fi
+      - name: Check release SemVer compatibility
+        run: scripts/check_release_semver.py
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth
       - run: cargo publish
