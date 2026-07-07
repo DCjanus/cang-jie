@@ -15,17 +15,13 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
+      - uses: astral-sh/setup-uv@v8
+        with:
+          version: "0.11.27"
+          python-version: "3.13"
+          enable-cache: true
       - uses: taiki-e/install-action@cargo-semver-checks
-      - name: Check release tag matches crate version
-        run: |
-          tag_version="${GITHUB_REF_NAME#v}"
-          crate_version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')"
-
-          if [ "$tag_version" != "$crate_version" ]; then
-            echo "release tag v${tag_version} does not match Cargo.toml version ${crate_version}" >&2
-            exit 1
-          fi
-      - name: Check release SemVer compatibility
+      - name: Check release SemVer gate
         run: scripts/check_release_semver.py
       - uses: rust-lang/crates-io-auth-action@v1
         id: auth

@@ -1,48 +1,38 @@
-#!/usr/bin/env python3
-"""Block incompatible stable releases before publishing to crates.io."""
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#     "rich>=15.0.0",
+#     "semver>=3.0.4",
+#     "typer>=0.26.8",
+# ]
+# ///
+"""Block invalid stable releases before publishing to crates.io."""
 
 from __future__ import annotations
 
-import argparse
+import json
 import os
-import re
 import shutil
 import subprocess
 import tempfile
 import textwrap
 import tomllib
-from dataclasses import dataclass
 from pathlib import Path
+from typing import Annotated
+
+import semver
+import typer
+from rich.console import Console
 
 
-STABLE_VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)$")
-VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$")
+Version = semver.Version
+console = Console()
 
 
-@dataclass(frozen=True, order=True)
-class Version:
-    major: int
-    minor: int
-    patch: int
-    stable: bool = True
-
-    @classmethod
-    def parse(cls, value: str) -> "Version":
-        stable_match = STABLE_VERSION_RE.match(value)
-        if stable_match:
-            return cls(*(int(part) for part in stable_match.groups()), stable=True)
-
-        match = VERSION_RE.match(value)
-        if not match:
-            raise ValueError(f"unsupported version format: {value}")
-        return cls(*(int(part) for part in match.groups()), stable=False)
-
-    def is_compatible_line_with(self, other: "Version") -> bool:
-        if not self.stable or not other.stable:
-            return False
-        if self.major == 0:
-            return self.minor != 0 and other.major == 0 and other.minor == self.minor
-        return other.major == self.major
+def fail(message: str) -> None:
+    console.print(message, style="red", stderr=True)
+    raise typer.Exit(1)
 
 
 def run(args: list[str], *, cwd: Path, capture: bool = False) -> str:
@@ -62,33 +52,87 @@ def cargo_package_version(repo: Path) -> str:
         cwd=repo,
         capture=True,
     )
-    import json
-
     return json.loads(metadata)["packages"][0]["version"]
+
+
+def parse_tag_version(tag_name: str) -> Version:
+    version = tag_name.removeprefix("v")
+    try:
+        return Version.parse(version)
+    except ValueError as exc:
+        fail(f"release tag {tag_name!r} is not a valid Semantic Version: {exc}")
+
+
+def parse_existing_tag_version(tag_name: str) -> Version | None:
+    try:
+        return Version.parse(tag_name.removeprefix("v"))
+    except ValueError:
+        return None
+
+
+def is_stable(version: Version) -> bool:
+    return version.prerelease is None
+
+
+def is_compatible_line(current: Version, other: Version) -> bool:
+    if not is_stable(current) or not is_stable(other):
+        return False
+    if current.major == 0:
+        return current.minor != 0 and other.major == 0 and other.minor == current.minor
+    return other.major == current.major
 
 
 def stable_tags(repo: Path) -> list[tuple[Version, str]]:
     tags = run(["git", "tag", "--list", "v*"], cwd=repo, capture=True).splitlines()
     versions = []
     for tag in tags:
-        try:
-            version = Version.parse(tag)
-        except ValueError:
+        version = parse_existing_tag_version(tag)
+        if version is None:
             continue
-        if version.stable:
+        if is_stable(version):
             versions.append((version, tag))
     return sorted(versions)
 
 
-def compatible_baseline_tag(
+def compatible_baseline(
     current: Version, tags: list[tuple[Version, str]]
-) -> str | None:
+) -> tuple[Version, str] | None:
     candidates = [
         (version, tag)
         for version, tag in tags
-        if version < current and current.is_compatible_line_with(version)
+        if version < current and is_compatible_line(current, version)
     ]
-    return candidates[-1][1] if candidates else None
+    return candidates[-1] if candidates else None
+
+
+def check_stable_version_progression(
+    tag_name: str, current: Version, tags: list[tuple[Version, str]]
+) -> None:
+    compatible = compatible_baseline(current, tags)
+    if compatible is not None:
+        _, previous_tag = compatible
+        console.print(
+            f"Checking version progression against previous compatible tag {previous_tag}."
+        )
+        return
+
+    existing = [
+        (version, tag) for version, tag in tags if version.compare(current) != 0
+    ]
+    if not existing:
+        console.print(f"{tag_name} is the first stable release tag.")
+        return
+
+    latest_version, latest_tag = existing[-1]
+    if current <= latest_version:
+        fail(
+            f"{tag_name} is not greater than latest stable release tag {latest_tag}. "
+            "Maintenance releases need an earlier compatible baseline tag in the same release line."
+        )
+
+    console.print(
+        f"Checking version progression against latest stable tag {latest_tag}."
+    )
 
 
 def baseline_jieba_requirement(repo: Path, baseline_tag: str) -> str | None:
@@ -108,12 +152,12 @@ def baseline_jieba_requirement(repo: Path, baseline_tag: str) -> str | None:
 def run_public_dependency_smoke(repo: Path, baseline_tag: str) -> None:
     jieba_requirement = baseline_jieba_requirement(repo, baseline_tag)
     if not jieba_requirement:
-        print(
+        console.print(
             "No baseline jieba-rs dependency found; skipping public dependency smoke test."
         )
         return
 
-    print(
+    console.print(
         "Checking documented CangJieTokenizer construction against "
         f"baseline jieba-rs requirement {jieba_requirement!r}."
     )
@@ -160,24 +204,28 @@ def check_release(repo: Path, tag_name: str) -> None:
     tag_version = tag_name.removeprefix("v")
     crate_version = cargo_package_version(repo)
     if tag_version != crate_version:
-        raise SystemExit(
+        fail(
             f"release tag {tag_name} does not match Cargo.toml version {crate_version}"
         )
 
-    current = Version.parse(tag_name)
-    if not current.stable:
-        print(f"{tag_name} is a pre-release tag; skipping strict SemVer gate.")
+    current = parse_tag_version(tag_name)
+    if not is_stable(current):
+        console.print(f"{tag_name} is a pre-release tag; skipping strict SemVer gate.")
         return
 
-    baseline_tag = compatible_baseline_tag(current, stable_tags(repo))
-    if baseline_tag is None:
-        print(
+    tags = stable_tags(repo)
+    check_stable_version_progression(tag_name, current, tags)
+
+    baseline = compatible_baseline(current, tags)
+    if baseline is None:
+        console.print(
             f"{tag_name} starts a new effective-major release line; "
             "breaking changes are allowed."
         )
         return
 
-    print(f"Checking SemVer compatibility against baseline {baseline_tag}.")
+    _, baseline_tag = baseline
+    console.print(f"Checking SemVer compatibility against baseline {baseline_tag}.")
     run(
         ["cargo", "semver-checks", "check-release", "--baseline-rev", baseline_tag],
         cwd=repo,
@@ -187,36 +235,63 @@ def check_release(repo: Path, tag_name: str) -> None:
 
 def self_test() -> None:
     tags = [
-        (Version.parse("v0.19.0"), "v0.19.0"),
-        (Version.parse("v0.20.0"), "v0.20.0"),
-        (Version.parse("v1.2.3"), "v1.2.3"),
-        (Version.parse("v1.3.0"), "v1.3.0"),
+        (parse_tag_version("v0.19.0"), "v0.19.0"),
+        (parse_tag_version("v0.20.0"), "v0.20.0"),
+        (parse_tag_version("v1.2.3"), "v1.2.3"),
+        (parse_tag_version("v1.3.0"), "v1.3.0"),
     ]
-    assert compatible_baseline_tag(Version.parse("v0.20.1"), tags) == "v0.20.0"
-    assert compatible_baseline_tag(Version.parse("v0.21.0"), tags) is None
-    assert compatible_baseline_tag(Version.parse("v1.3.1"), tags) == "v1.3.0"
-    assert compatible_baseline_tag(Version.parse("v1.4.0"), tags) == "v1.3.0"
-    assert not Version.parse("v0.20.0-alpha.1").stable
-    print("self-test passed")
+    assert compatible_baseline(parse_tag_version("v0.20.1"), tags) == (
+        parse_tag_version("v0.20.0"),
+        "v0.20.0",
+    )
+    assert compatible_baseline(parse_tag_version("v0.21.0"), tags) is None
+    assert compatible_baseline(parse_tag_version("v1.3.1"), tags) == (
+        parse_tag_version("v1.3.0"),
+        "v1.3.0",
+    )
+    assert compatible_baseline(parse_tag_version("v1.4.0"), tags) == (
+        parse_tag_version("v1.3.0"),
+        "v1.3.0",
+    )
+    assert not is_stable(parse_tag_version("v0.20.0-alpha.1"))
+    console.print("self-test passed")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--repo", type=Path, default=Path.cwd())
-    parser.add_argument("--tag", default=os.environ.get("GITHUB_REF_NAME"))
-    parser.add_argument("--self-test", action="store_true")
-    args = parser.parse_args()
-
-    if args.self_test:
+def main(
+    repo: Annotated[
+        Path,
+        typer.Option(
+            "--repo",
+            help="Repository root to inspect.",
+            resolve_path=True,
+            file_okay=False,
+            dir_okay=True,
+        ),
+    ] = Path.cwd(),
+    tag: Annotated[
+        str | None,
+        typer.Option(
+            "--tag",
+            help="Release tag to validate. Defaults to GITHUB_REF_NAME.",
+        ),
+    ] = None,
+    self_test_flag: Annotated[
+        bool,
+        typer.Option("--self-test", help="Run lightweight internal assertions."),
+    ] = False,
+) -> None:
+    if self_test_flag:
         self_test()
         return
-    if not args.tag:
-        raise SystemExit("--tag or GITHUB_REF_NAME is required")
-    if shutil.which("cargo-semver-checks") is None:
-        raise SystemExit("cargo-semver-checks is required")
 
-    check_release(args.repo.resolve(), args.tag)
+    tag_name = tag or os.environ.get("GITHUB_REF_NAME")
+    if not tag_name:
+        fail("--tag or GITHUB_REF_NAME is required")
+    if shutil.which("cargo-semver-checks") is None:
+        fail("cargo-semver-checks is required")
+
+    check_release(repo.resolve(), tag_name)
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)
