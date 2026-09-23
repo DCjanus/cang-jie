@@ -10,6 +10,9 @@ repository = "https://github.com/DCjanus/cang-jie"
 readme = "README.md"
 keywords = ["search", "tokenizer", "Chinese", "tantivy"]
 
+[features]
+default-dict = ["jieba-rs/default-dict"]
+
 [dependencies]
 jieba-rs = { version = "0.11.0", default-features = false }
 log = "0.4.29"
