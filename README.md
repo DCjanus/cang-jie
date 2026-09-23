@@ -47,8 +47,8 @@ fn main() -> tantivy::Result<()> {
 
 See [unicode_split.rs](./tests/unicode_split.rs) for a complete searchable example.
 
-To use `cang_jie::Jieba::new()` without a direct `jieba-rs` dependency, enable
-the `default-dict` feature.
+To use `cang_jie::jieba_rs::Jieba::new()` without a direct `jieba-rs` dependency,
+enable the `default-dict` feature.
 
 ## Maintenance
 
