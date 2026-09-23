@@ -9,20 +9,6 @@ Chinese tokenizer integration for [Tantivy](https://github.com/quickwit-oss/tant
 
 ## Usage
 
-When constructing `CangJieTokenizer` with your own `Jieba` worker, add both crates to your `Cargo.toml`:
-
-```toml
-[dependencies]
-cang-jie = "0.21"
-jieba-rs = "0.11"
-```
-
-Use the same `jieba-rs` release line as `cang-jie`:
-`CangJieTokenizer::worker` exposes `Jieba` in its public API. The example below
-disables HMM. If you enable HMM, upgrading `jieba-rs` from 0.10 to 0.11 can
-change token boundaries for identifiers and version strings. Rebuild persistent
-indexes created with HMM enabled before querying them with the new tokenizer.
-
 ```rust
 use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
 use jieba_rs::Jieba;
