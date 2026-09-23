@@ -3,6 +3,7 @@
 pub use crate::{
     options::TokenizerOption, stream::CangjieTokenStream, tokenizer::CangJieTokenizer,
 };
+pub use jieba_rs;
 
 pub mod options;
 pub mod stream;
