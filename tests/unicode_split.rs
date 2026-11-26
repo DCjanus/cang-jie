@@ -75,7 +75,7 @@ pub fn logger_format(
     write!(
         w,
         "[{}] {} [{}:{}] {}",
-        now.now().format("%Y-%m-%d %H:%M:%S %:z"),
+        now.now().strftime("%Y-%m-%d %H:%M:%S %:z"),
         record.level(),
         record.module_path().unwrap_or("<unnamed>"),
         record.line().unwrap_or(0),

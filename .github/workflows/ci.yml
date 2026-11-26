@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         # Stable is covered by the coverage job, which runs instrumented tests.
-        toolchain: [ 1.88.0, beta, nightly ]
+        toolchain: [ 1.91.0, beta, nightly ]
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@master
