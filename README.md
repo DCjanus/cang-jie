@@ -52,7 +52,7 @@ enable the `default-dict` feature.
 
 ## Maintenance
 
-This crate uses Rust 2024 and requires Rust 1.88 or newer.
+This crate uses Rust 2024 and requires Rust 1.91 or newer.
 
 Install [prek](https://prek.j178.dev/installation/), then run the local checks with:
 
